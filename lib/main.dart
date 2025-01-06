@@ -1,94 +1,89 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
-
+import 'FaceMenu.dart'; // Import ไฟล์ FaceMenu.dart
 void main() {
-  runApp(MyApp());
+ runApp(const MyApp());
 }
-
 class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.blue,
-          title: Text(
-            'Profile',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold), // ปรับขนาด font ของ app bar
-          ),
-          centerTitle: true,
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 90,
-                  height: 90,
-                  color: Colors.grey[300],
-                  alignment: Alignment.center,
-                  child: Image.network(
-                    'https://www.w3schools.com/w3images/avatar2.png', // URL ที่ถูกต้อง
-                  ),
-                ),
-              ),
-              SizedBox(height: 6),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
-                    'Phantawat',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    'Manphansa',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    'Tonmai',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Hobby: listen music, playing games',
-                style: TextStyle(fontSize: 16),
-              ),
-              Text(
-                'Food: Pizza, Yum',
-                style: TextStyle(fontSize: 16),
-              ),
-              Text(
-                'Birthplace:Phitsanulok, Thailand',
-                style: TextStyle(fontSize: 16),
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Education:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Elementary: Saint Nicholas School   Year: 2009-2011',
-                style: TextStyle(fontSize: 16),
-              ),
-              Text(
-                'Primary: Saint Nicholas School   Year: 2012-2014',
-                style: TextStyle(fontSize: 16),
-              ),
-              Text(
-                'High School: Saint Nicholas School  Year: 2015-2021',
-                style: TextStyle(fontSize: 16),
-              ),
-              Text(
-                'Undergrad: Naresuan University   Year: 2021-2025',
-                style: TextStyle(fontSize: 16),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+ const MyApp({super.key});
+ @override
+ Widget build(BuildContext context) {
+   return MaterialApp(
+     title: 'Flutter Demo',
+     theme: ThemeData(
+       colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+       useMaterial3: true,
+     ),
+     home: const MyHomePage(),
+   );
+ }
+}
+class MyHomePage extends StatefulWidget {
+ const MyHomePage({super.key});
+ @override
+ State<MyHomePage> createState() => _MyHomePageState();
+}
+class _MyHomePageState extends State<MyHomePage> {
+ final List<FaceMenu> _menuList = FaceMenu.getSampleMenu();
+ final List<FaceMenu> _selectedMenus = [];
+ final Random _random = Random();
+ int _totalPrice = 0;
+ // ฟังก์ชันสำหรับเพิ่มข้อมูลใหม่ใน List
+ void _addItem() {
+   setState(() {
+     int index = _random.nextInt(_menuList.length);
+     FaceMenu selectedMenu = _menuList[index];
+     _selectedMenus.add(selectedMenu);
+     _totalPrice += selectedMenu.price; // เพิ่มราคารวม
+   });
+ }
+ @override
+ Widget build(BuildContext context) {
+   return Scaffold(
+     appBar: AppBar(
+       backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+       title: Text('Flutter Demo : Food Order - Total Price : $_totalPrice'),
+     ),
+     body: ListView.builder(
+       itemCount: _selectedMenus.length,
+       itemBuilder: (context, index) {
+         FaceMenu menu = _selectedMenus[index];
+         return Card(
+           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+           child: ListTile(
+             contentPadding: const EdgeInsets.all(10),
+             leading: CircleAvatar(
+               backgroundColor: Colors.deepPurple,
+               radius: 30,
+               child: Text(
+                 '${menu.price}',
+                 style: const TextStyle(
+                   color: Colors.white,
+                   fontSize: 18,
+                   fontWeight: FontWeight.bold,
+                 ),
+               ),
+             ),
+             title: Text(
+               "Dish $index is ${menu.name}",
+               style: const TextStyle(
+                 fontSize: 16,
+                 fontWeight: FontWeight.bold,
+               ),
+             ),
+             subtitle: Text(
+               "This menu ingredient are ${menu.ingredients.join(", ")}",
+               style: const TextStyle(fontSize: 14),
+             ),
+           ),
+         );
+       },
+     ),
+     floatingActionButton: FloatingActionButton(
+       onPressed: _addItem,
+       tooltip: 'Add Item',
+       child: const Icon(Icons.add),
+     ),
+   );
+ }
 }
